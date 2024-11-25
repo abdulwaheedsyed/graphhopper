@@ -63,7 +63,19 @@ public class RoundaboutInstruction extends Instruction {
     public int getExitNumber() {
         if (exited && exitNumber == 0)
             return 1; // special case: we leave at a way without car_access
-        return exitNumber;
+        switch(exitNumber){
+            case 1:
+                return "1st";
+            case 2:
+                return "2nd";
+            case 3:
+                return "3rd";
+            case 4:
+                return "4th";
+            default:
+                return exitNumber+"th";
+        }
+        // return exitNumber;
     }
 
     public RoundaboutInstruction setExitNumber(int exitNumber) {
