@@ -232,7 +232,7 @@ public class PathTest {
         // Test instructions
         List<String> tmpList = getTurnDescriptions(wayList);
         assertEquals(List.of("continue onto MainStreet 1 2",
-                        "At roundabout, take exit 3 onto 5-8",
+                        "At roundabout, take the 3rd exit onto 5-8",
                         "arrive at destination"),
                 tmpList);
         // Test Radian
@@ -246,7 +246,7 @@ public class PathTest {
         wayList = InstructionsFromEdges.calcInstructions(p, p.graph, weighting, mixedEncodingManager, tr);
         tmpList = getTurnDescriptions(wayList);
         assertEquals(List.of("continue onto MainStreet 1 2",
-                        "At roundabout, take exit 2 onto MainStreet 4 7",
+                        "At roundabout, take the 2nd exit onto MainStreet 4 7",
                         "arrive at destination"),
                 tmpList);
         // Test Radian
@@ -263,7 +263,7 @@ public class PathTest {
         assertTrue(p.isFound());
         InstructionList wayList = InstructionsFromEdges.calcInstructions(p, p.graph, weighting, mixedEncodingManager, tr);
         List<String> tmpList = getTurnDescriptions(wayList);
-        assertEquals(List.of("At roundabout, take exit 3 onto 5-8",
+        assertEquals(List.of("At roundabout, take the 3rd exit onto 5-8",
                         "arrive at destination"),
                 tmpList);
     }
@@ -278,7 +278,7 @@ public class PathTest {
         InstructionList wayList = InstructionsFromEdges.calcInstructions(p, p.graph, weighting, mixedEncodingManager, tr);
         List<String> tmpList = getTurnDescriptions(wayList);
         assertEquals(List.of("continue onto 3-6",
-                        "At roundabout, take exit 3 onto 5-8",
+                        "At roundabout, take the 3rd exit onto 5-8",
                         "arrive at destination"),
                 tmpList);
         roundaboutGraph.inverse3to9();

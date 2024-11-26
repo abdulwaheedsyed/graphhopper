@@ -63,19 +63,7 @@ public class RoundaboutInstruction extends Instruction {
     public int getExitNumber() {
         if (exited && exitNumber == 0)
             return 1; // special case: we leave at a way without car_access
-        switch(exitNumber){
-            case 1:
-                return "1st";
-            case 2:
-                return "2nd";
-            case 3:
-                return "3rd";
-            case 4:
-                return "4th";
-            default:
-                return exitNumber+"th";
-        }
-        // return exitNumber;
+        return exitNumber;
     }
 
     public RoundaboutInstruction setExitNumber(int exitNumber) {
@@ -131,12 +119,41 @@ public class RoundaboutInstruction extends Instruction {
             if (!exited) {
                 str = tr.tr("roundabout_enter");
             } else {
-                str = Helper.isEmpty(streetName) ? tr.tr("roundabout_exit", getExitNumber())
-                        : tr.tr("roundabout_exit_onto", getExitNumber(), streetName);
+                String exitNth = getExitOrdinal(getExitNumber(), tr.getLanguage());
+                str = Helper.isEmpty(streetName) ? tr.tr("roundabout_exit", exitNth)
+                        : tr.tr("roundabout_exit_onto", exitNth, streetName);
             }
         } else {
             throw new IllegalStateException(indi + "no roundabout indication");
         }
         return str;
+    }
+
+    private String getExitOrdinal(int exitNo, String language) {
+        if ("en".equals(language)) {
+            return switch (exitNo) {
+                case 1 -> "1st";
+                case 2 -> "2nd";
+                case 3 -> "3rd";
+                default -> exitNo + "th";
+            };
+        } else if ("ar".equals(language)) {
+            return switch (exitNo) {
+                case 1 -> "الأول";
+                case 2 -> "الثاني";
+                case 3 -> "الثالث";
+                case 4 -> "الرابع";
+                case 5 -> "الخامس";
+                case 6 -> "السادس";
+                case 7 -> "السابع";
+                case 8 -> "الثامن";
+                case 9 -> "التاسع";
+                case 10 -> "العاشر";
+                default -> String.valueOf(exitNo);
+            };
+        }
+
+        // Fallback for unsupported languages
+        return String.valueOf(exitNo);
     }
 }
