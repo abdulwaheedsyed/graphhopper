@@ -52,10 +52,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * This class stores the landmark nodes and the weights from and to all other nodes in every
- * subnetwork. This data is created to apply a speed-up for path calculation but at the same times
- * stays flexible to per-request changes. The class is safe for usage from multiple reading threads
- * across algorithms.
+ * This class stores the landmark nodes and the weights from and to all other
+ * nodes in every subnetwork. This data is created to apply a speed-up for path
+ * calculation but at the same times stays flexible to per-request changes. The
+ * class is safe for usage from multiple reading threads across algorithms.
  *
  * @author Peter Karich
  */
@@ -115,8 +115,9 @@ public class LandmarkStorage {
             public double calcEdgeWeight(EdgeIteratorState edge, boolean reverse) {
                 // make accessibility of shortest identical to the provided weighting to avoid problems like shown in testWeightingConsistence
                 double res = weighting.calcEdgeWeight(edge, reverse);
-                if (res >= Double.MAX_VALUE)
+                if (res >= Double.MAX_VALUE) {
                     return Double.POSITIVE_INFINITY;
+                }
 
                 // returning the time or distance leads to strange landmark positions (ferries -> slow&very long) and BFS is more what we want
                 return 1;
@@ -144,20 +145,23 @@ public class LandmarkStorage {
     }
 
     /**
-     * Specify the maximum possible value for your used area. With this maximum weight value you can influence the storage
-     * precision for your weights that help A* finding its way to the goal. The same value is used for all subnetworks.
-     * Note, if you pick this value too big then too similar weights are stored
-     * (some bits of the storage capability will be left unused).
-     * If too low then far away values will have the same maximum value associated ("maxed out").
-     * Both will lead to bad performance.
+     * Specify the maximum possible value for your used area. With this maximum
+     * weight value you can influence the storage precision for your weights
+     * that help A* finding its way to the goal. The same value is used for all
+     * subnetworks. Note, if you pick this value too big then too similar
+     * weights are stored (some bits of the storage capability will be left
+     * unused). If too low then far away values will have the same maximum value
+     * associated ("maxed out"). Both will lead to bad performance.
      *
-     * @param maxWeight use a negative value to automatically determine this value.
+     * @param maxWeight use a negative value to automatically determine this
+     * value.
      */
     public LandmarkStorage setMaximumWeight(double maxWeight) {
         if (maxWeight > 0) {
             this.factor = maxWeight / PRECISION;
-            if (Double.isInfinite(factor) || Double.isNaN(factor))
+            if (Double.isInfinite(factor) || Double.isNaN(factor)) {
                 throw new IllegalStateException("Illegal factor " + factor + " calculated from maximum weight " + maxWeight);
+            }
         }
         return this;
     }
@@ -170,20 +174,23 @@ public class LandmarkStorage {
     }
 
     /**
-     * This method forces the landmark preparation to skip the landmark search and uses the specified landmark list instead.
-     * Useful for manual tuning of larger areas to safe import time or improve quality.
+     * This method forces the landmark preparation to skip the landmark search
+     * and uses the specified landmark list instead. Useful for manual tuning of
+     * larger areas to safe import time or improve quality.
      */
     public LandmarkStorage setLandmarkSuggestions(List<LandmarkSuggestion> landmarkSuggestions) {
-        if (landmarkSuggestions == null)
+        if (landmarkSuggestions == null) {
             throw new IllegalArgumentException("landmark suggestions cannot be null");
+        }
 
         this.landmarkSuggestions = landmarkSuggestions;
         return this;
     }
 
     /**
-     * This method sets the required number of nodes of a subnetwork for which landmarks should be calculated. Every
-     * subnetwork below this count will be ignored.
+     * This method sets the required number of nodes of a subnetwork for which
+     * landmarks should be calculated. Every subnetwork below this count will be
+     * ignored.
      */
     public void setMinimumNodes(int minimumNodes) {
         this.minimumNodes = minimumNodes;
@@ -197,8 +204,10 @@ public class LandmarkStorage {
     }
 
     /**
-     * This weighting is used for the selection heuristic and is per default not the weighting specified in the constructor.
-     * The special weighting leads to a much better distribution of the landmarks and results in better response times.
+     * This weighting is used for the selection heuristic and is per default not
+     * the weighting specified in the constructor. The special weighting leads
+     * to a much better distribution of the landmarks and results in better
+     * response times.
      */
     public void setLMSelectionWeighting(Weighting lmSelectionWeighting) {
         this.lmSelectionWeighting = lmSelectionWeighting;
@@ -209,7 +218,8 @@ public class LandmarkStorage {
     }
 
     /**
-     * This method returns the weighting for which the landmarks are originally created
+     * This method returns the weighting for which the landmarks are originally
+     * created
      */
     public Weighting getWeighting() {
         return weighting;
@@ -224,11 +234,13 @@ public class LandmarkStorage {
     }
 
     /**
-     * This method calculates the landmarks and initial weightings to &amp; from them.
+     * This method calculates the landmarks and initial weightings to &amp; from
+     * them.
      */
     public void createLandmarks() {
-        if (isInitialized())
+        if (isInitialized()) {
             throw new IllegalStateException("Initialize the landmark storage only once!");
+        }
 
         // fill 'from' and 'to' weights with maximum value
         long maxBytes = (long) graph.getNodes() * LM_ROW_LENGTH;
@@ -249,9 +261,10 @@ public class LandmarkStorage {
         String snKey = Subnetwork.key(lmConfig.getName());
         // TODO We could use EdgeBasedTarjanSCC instead of node-based TarjanSCC here to get the small networks directly,
         //  instead of using the subnetworkEnc from PrepareRoutingSubnetworks.
-        if (!encodedValueLookup.hasEncodedValue(snKey))
-            throw new IllegalArgumentException("EncodedValue '" + snKey + "' does not exist. For Landmarks this is " +
-                    "currently required (also used in PrepareRoutingSubnetworks). See #2256");
+        if (!encodedValueLookup.hasEncodedValue(snKey)) {
+            throw new IllegalArgumentException("EncodedValue '" + snKey + "' does not exist. For Landmarks this is "
+                    + "currently required (also used in PrepareRoutingSubnetworks). See #2256");
+        }
 
         // Exclude edges that we previously marked in PrepareRoutingSubnetworks to avoid problems like "connection not found".
         final BooleanEncodedValue edgeInSubnetworkEnc = encodedValueLookup.getBooleanEncodedValue(snKey);
@@ -262,8 +275,9 @@ public class LandmarkStorage {
         if (areaIndex != null) {
             StopWatch sw = new StopWatch().start();
             blockedEdges = findBorderEdgeIds(areaIndex);
-            if (logDetails)
+            if (logDetails) {
                 LOGGER.info("Made " + blockedEdges.size() + " edges inaccessible. Calculated country cut in " + sw.stop().getSeconds() + "s, " + Helper.getMemInfo());
+            }
         } else {
             blockedEdges = new IntHashSet();
         }
@@ -273,8 +287,9 @@ public class LandmarkStorage {
 
         StopWatch sw = new StopWatch().start();
         ConnectedComponents graphComponents = TarjanSCC.findComponents(graph, tarjanFilter, true);
-        if (logDetails)
+        if (logDetails) {
             LOGGER.info("Calculated " + graphComponents.getComponents().size() + " subnetworks via tarjan in " + sw.stop().getSeconds() + "s, " + Helper.getMemInfo());
+        }
 
         String additionalInfo = "";
         // guess the factor
@@ -289,17 +304,20 @@ public class LandmarkStorage {
             additionalInfo = ", maxWeight:" + maxWeight + " from quick estimation";
         }
 
-        if (logDetails)
+        if (logDetails) {
             LOGGER.info("init landmarks for subnetworks with node count greater than " + minimumNodes + " with factor:" + factor + additionalInfo);
+        }
 
         int nodes = 0;
         for (IntArrayList subnetworkIds : graphComponents.getComponents()) {
             nodes += subnetworkIds.size();
-            if (subnetworkIds.size() < minimumNodes)
+            if (subnetworkIds.size() < minimumNodes) {
                 continue;
-            if (factor <= 0)
+            }
+            if (factor <= 0) {
                 throw new IllegalStateException("factor wasn't initialized " + factor + ", subnetworks:"
                         + graphComponents.getComponents().size() + ", minimumNodes:" + minimumNodes + ", current size:" + subnetworkIds.size());
+            }
 
             int index = subnetworkIds.size() - 1;
             // ensure start node is reachable from both sides and no subnetwork is associated
@@ -312,17 +330,19 @@ public class LandmarkStorage {
                                 + ", " + Helper.getMemInfo() + ((areaIndex == null) ? "" : " area:" + areaIndex.query(p.lat, p.lon)));
                     }
 
-                    if (createLandmarksForSubnetwork(nextStartNode, subnetworks, accessFilter))
+                    if (createLandmarksForSubnetwork(nextStartNode, subnetworks, accessFilter)) {
                         break;
+                    }
                 }
             }
-            if (index < 0)
+            if (index < 0) {
                 LOGGER.warn("next start node not found in big enough network of size " + subnetworkIds.size() + ", first element is " + subnetworkIds.get(0) + ", " + createPoint(graph, subnetworkIds.get(0)));
+            }
         }
 
         int subnetworkCount = landmarkIDs.size();
         // store all landmark node IDs and one int for the factor itself.
-        this.landmarkWeightDA.ensureCapacity(maxBytes /* landmark weights */ + (long) subnetworkCount * landmarks /* landmark mapping per subnetwork */);
+        this.landmarkWeightDA.ensureCapacity(maxBytes /* landmark weights */ + (long) subnetworkCount * landmarks /* landmark mapping per subnetwork */ + 4);
 
         // calculate offset to point into landmark mapping
         long bytePos = maxBytes;
@@ -336,8 +356,9 @@ public class LandmarkStorage {
         landmarkWeightDA.setHeader(0 * 4, graph.getNodes());
         landmarkWeightDA.setHeader(1 * 4, landmarks);
         landmarkWeightDA.setHeader(2 * 4, subnetworkCount);
-        if (factor * DOUBLE_MLTPL > Integer.MAX_VALUE)
+        if (factor * DOUBLE_MLTPL > Integer.MAX_VALUE) {
             throw new UnsupportedOperationException("landmark weight factor cannot be bigger than Integer.MAX_VALUE " + factor * DOUBLE_MLTPL);
+        }
         landmarkWeightDA.setHeader(3 * 4, (int) Math.round(factor * DOUBLE_MLTPL));
 
         // serialize fast byte[] into DataAccess
@@ -346,13 +367,15 @@ public class LandmarkStorage {
             subnetworkStorage.setSubnetwork(nodeId, subnetworks[nodeId]);
         }
 
-        if (logDetails)
+        if (logDetails) {
             LOGGER.info("Finished landmark creation. Subnetwork node count sum " + nodes + " vs. nodes " + graph.getNodes());
+        }
         initialized = true;
     }
 
     /**
-     * This method returns the maximum weight for the graph starting from the landmarks
+     * This method returns the maximum weight for the graph starting from the
+     * landmarks
      */
     private double estimateMaxWeight(List<IntArrayList> graphComponents, EdgeFilter accessFilter) {
         double maxWeight = 0;
@@ -363,8 +386,9 @@ public class LandmarkStorage {
         // TODO instead of calculating the landmarks again here we could store them in landmarkIDs and do this for all here
         int[] tmpLandmarkNodeIds = new int[3];
         for (IntArrayList subnetworkIds : graphComponents) {
-            if (subnetworkIds.size() < minimumNodes)
+            if (subnetworkIds.size() < minimumNodes) {
                 continue;
+            }
 
             searchedSubnetworks++;
             int maxRetries = Math.max(subnetworkIds.size(), 100);
@@ -390,8 +414,9 @@ public class LandmarkStorage {
             }
         }
 
-        if (maxWeight <= 0 && searchedSubnetworks > 0)
+        if (maxWeight <= 0 && searchedSubnetworks > 0) {
             throw new IllegalStateException("max weight wasn't set although " + searchedSubnetworks + " subnetworks were searched (total " + graphComponents.size() + "), minimumNodes:" + minimumNodes);
+        }
 
         // we have to increase maxWeight slightly as it is only an approximation towards the maximum weight,
         // especially when external landmarks are provided, but also because we do not traverse all landmarks
@@ -420,8 +445,9 @@ public class LandmarkStorage {
             }
 
             if (selectedSuggestion != null) {
-                if (selectedSuggestion.getNodeIds().size() < tmpLandmarkNodeIds.length)
+                if (selectedSuggestion.getNodeIds().size() < tmpLandmarkNodeIds.length) {
                     throw new IllegalArgumentException("landmark suggestions are too few " + selectedSuggestion.getNodeIds().size() + " for requested landmarks " + landmarks);
+                }
 
                 pickedPrecalculatedLandmarks = true;
                 for (int i = 0; i < tmpLandmarkNodeIds.length; i++) {
@@ -440,8 +466,9 @@ public class LandmarkStorage {
                 explorer.setSubnetworks(subnetworks, UNCLEAR_SUBNETWORK);
                 return false;
             }
-            if (logDetails)
+            if (logDetails) {
                 LOGGER.info("Finished searching landmarks for subnetwork " + subnetworkId + " of size " + explorer.getVisitedNodes());
+            }
         }
 
         // 2) calculate weights for all landmarks -> 'from' and 'to' weight
@@ -457,8 +484,9 @@ public class LandmarkStorage {
 
             // set subnetwork id to all explored nodes, but do this only for the first landmark
             if (lmIdx == 0) {
-                if (explorer.setSubnetworks(subnetworks, subnetworkId))
+                if (explorer.setSubnetworks(subnetworks, subnetworkId)) {
                     return false;
+                }
             }
 
             explorer = new LandmarkExplorer(graph, this, weighting, traversalMode, accessFilter, true);
@@ -467,13 +495,15 @@ public class LandmarkStorage {
             explorer.initLandmarkWeights(lmIdx, lmNodeId, LM_ROW_LENGTH, TO_OFFSET);
 
             if (lmIdx == 0) {
-                if (explorer.setSubnetworks(subnetworks, subnetworkId))
+                if (explorer.setSubnetworks(subnetworks, subnetworkId)) {
                     return false;
+                }
             }
 
-            if (logDetails && lmIdx % logOffset == 0)
+            if (logDetails && lmIdx % logOffset == 0) {
                 LOGGER.info("Set landmarks weights [" + weighting + "]. "
                         + "Progress " + (int) (100.0 * lmIdx / tmpLandmarkNodeIds.length) + "%");
+            }
         }
 
         // TODO set weight to SHORT_MAX if entry has either no 'from' or no 'to' entry
@@ -482,16 +512,18 @@ public class LandmarkStorage {
     }
 
     /**
-     * This method specifies the polygons which should be used to split the world wide area to improve performance and
-     * quality in this scenario.
+     * This method specifies the polygons which should be used to split the
+     * world wide area to improve performance and quality in this scenario.
      */
     public void setAreaIndex(AreaIndex<SplitArea> areaIndex) {
         this.areaIndex = areaIndex;
     }
 
     /**
-     * This method makes edges crossing the specified border inaccessible to split a bigger area into smaller subnetworks.
-     * This is important for the world wide use case to limit the maximum distance and also to detect unreasonable routes faster.
+     * This method makes edges crossing the specified border inaccessible to
+     * split a bigger area into smaller subnetworks. This is important for the
+     * world wide use case to limit the maximum distance and also to detect
+     * unreasonable routes faster.
      */
     protected IntHashSet findBorderEdgeIds(AreaIndex<SplitArea> areaIndex) {
         AllEdgesIterator allEdgesIterator = graph.getAllEdges();
@@ -519,17 +551,19 @@ public class LandmarkStorage {
     }
 
     /**
-     * @return the weight from the landmark to the specified node. Where the landmark integer is not
-     * a node ID but the internal index of the landmark array.
+     * @return the weight from the landmark to the specified node. Where the
+     * landmark integer is not a node ID but the internal index of the landmark
+     * array.
      */
     int getFromWeight(int landmarkIndex, int node) {
         int res = (int) landmarkWeightDA.getShort((long) node * LM_ROW_LENGTH + landmarkIndex * 4L + FROM_OFFSET)
                 & 0x0000FFFF;
-        if (res == SHORT_INFINITY)
-            // TODO can happen if endstanding oneway
-            // we should set a 'from' value to SHORT_MAX if the 'to' value was already set to find real bugs
-            // and what to return? Integer.MAX_VALUE i.e. convert to Double.pos_infinity upstream?
+        if (res == SHORT_INFINITY) // TODO can happen if endstanding oneway
+        // we should set a 'from' value to SHORT_MAX if the 'to' value was already set to find real bugs
+        // and what to return? Integer.MAX_VALUE i.e. convert to Double.pos_infinity upstream?
+        {
             return SHORT_MAX;
+        }
         // throw new IllegalStateException("Do not call getFromWeight for wrong landmark[" + landmarkIndex + "]=" + landmarkIDs[landmarkIndex] + " and node " + node);
         // TODO if(res == MAX) fallback to beeline approximation!?
 
@@ -537,24 +571,28 @@ public class LandmarkStorage {
     }
 
     /**
-     * @return the weight from the specified node to the landmark (specified *as index*)
+     * @return the weight from the specified node to the landmark (specified *as
+     * index*)
      */
     int getToWeight(int landmarkIndex, int node) {
         int res = (int) landmarkWeightDA.getShort((long) node * LM_ROW_LENGTH + landmarkIndex * 4 + TO_OFFSET)
                 & 0x0000FFFF;
-        if (res == SHORT_INFINITY)
+        if (res == SHORT_INFINITY) {
             return SHORT_MAX;
+        }
 
         return res;
     }
 
     /**
-     * @return false if the value capacity was reached and instead of the real value the SHORT_MAX was stored.
+     * @return false if the value capacity was reached and instead of the real
+     * value the SHORT_MAX was stored.
      */
     final boolean setWeight(long pointer, double value) {
         double tmpVal = value / factor;
-        if (tmpVal > Integer.MAX_VALUE)
+        if (tmpVal > Integer.MAX_VALUE) {
             throw new UnsupportedOperationException("Cannot store infinity explicitly, pointer=" + pointer + ", value=" + value + ", factor=" + factor);
+        }
 
         if (tmpVal >= SHORT_MAX) {
             landmarkWeightDA.setShort(pointer, (short) SHORT_MAX);
@@ -571,14 +609,16 @@ public class LandmarkStorage {
 
     // From all available landmarks pick just a few active ones
     boolean chooseActiveLandmarks(int fromNode, int toNode, int[] activeLandmarkIndices, boolean reverse) {
-        if (fromNode < 0 || toNode < 0)
+        if (fromNode < 0 || toNode < 0) {
             throw new IllegalStateException("from " + fromNode + " and to "
                     + toNode + " nodes have to be 0 or positive to init landmarks");
+        }
 
         int subnetworkFrom = subnetworkStorage.getSubnetwork(fromNode);
         int subnetworkTo = subnetworkStorage.getSubnetwork(toNode);
-        if (subnetworkFrom <= UNCLEAR_SUBNETWORK || subnetworkTo <= UNCLEAR_SUBNETWORK)
+        if (subnetworkFrom <= UNCLEAR_SUBNETWORK || subnetworkTo <= UNCLEAR_SUBNETWORK) {
             return false;
+        }
         if (subnetworkFrom != subnetworkTo) {
             throw new ConnectionNotFoundException("Connection between locations not found. Different subnetworks " + subnetworkFrom
                     + " vs. " + subnetworkTo, new HashMap<>());
@@ -608,8 +648,9 @@ public class LandmarkStorage {
                     break;
                 } else {
                     activeLandmarkIndices[i] = list.get(i).getValue();
-                    if (set.contains(activeLandmarkIndices[i]))
+                    if (set.contains(activeLandmarkIndices[i])) {
                         existingLandmarkCounter++;
+                    }
                 }
             }
 
@@ -645,8 +686,9 @@ public class LandmarkStorage {
     public String toString() {
         String str = "";
         for (int[] ints : landmarkIDs) {
-            if (!str.isEmpty())
+            if (!str.isEmpty()) {
                 str += ", ";
+            }
             str += Arrays.toString(ints);
         }
         return str;
@@ -661,8 +703,9 @@ public class LandmarkStorage {
             int[] lmArray = landmarkIDs.get(subnetwork);
             for (int lmIdx = 0; lmIdx < lmArray.length; lmIdx++) {
                 int index = lmArray[lmIdx];
-                if (!str.isEmpty())
+                if (!str.isEmpty()) {
                     str += ",";
+                }
 
                 str += "{ \"type\": \"Feature\", \"geometry\": {\"type\": \"Point\", \"coordinates\": ["
                         + na.getLon(index) + ", " + na.getLat(index) + "]},";
@@ -677,15 +720,18 @@ public class LandmarkStorage {
     }
 
     public boolean loadExisting() {
-        if (isInitialized())
+        if (isInitialized()) {
             throw new IllegalStateException("Cannot call PrepareLandmarks.loadExisting if already initialized");
+        }
         if (landmarkWeightDA.loadExisting()) {
-            if (!subnetworkStorage.loadExisting())
+            if (!subnetworkStorage.loadExisting()) {
                 throw new IllegalStateException("landmark weights loaded but not the subnetworks!?");
+            }
 
             int nodes = landmarkWeightDA.getHeader(0 * 4);
-            if (nodes != graph.getNodes())
+            if (nodes != graph.getNodes()) {
                 throw new IllegalArgumentException("Cannot load landmark data as written for different graph storage with " + nodes + " nodes, not " + graph.getNodes());
+            }
             landmarks = landmarkWeightDA.getHeader(1 * 4);
             int subnetworks = landmarkWeightDA.getHeader(2 * 4);
             factor = landmarkWeightDA.getHeader(3 * 4) / DOUBLE_MLTPL;
@@ -750,10 +796,11 @@ public class LandmarkStorage {
                 }
                 explorer.runAlgo();
                 landmarkNodeIdsToReturn[lmIdx + 1] = explorer.getLastEntry().adjNode;
-                if (logDetails && lmIdx % logOffset == 0)
+                if (logDetails && lmIdx % logOffset == 0) {
                     LOGGER.info("Finding landmarks [" + lmConfig + "] in network [" + explorer.getVisitedNodes() + "] for " + info + ". "
                             + "Start node:" + startNode + " (" + createPoint(graph, startNode) + ")"
                             + "Progress " + (int) (100.0 * lmIdx / landmarkNodeIdsToReturn.length) + "%, " + Helper.getMemInfo());
+                }
             }
         }
         return explorer;
@@ -768,9 +815,11 @@ public class LandmarkStorage {
 
     /**
      * This class is used to calculate landmark location (equally distributed).
-     * It derives from DijkstraBidirectionRef, but is only used as forward or backward search.
+     * It derives from DijkstraBidirectionRef, but is only used as forward or
+     * backward search.
      */
     private static class LandmarkExplorer extends DijkstraBidirectionRef {
+
         private EdgeFilter accessFilter;
         private final boolean reverse;
         private final LandmarkStorage lms;
@@ -782,26 +831,29 @@ public class LandmarkStorage {
             this.lms = lms;
             this.reverse = reverse;
             // set one of the bi directions as already finished
-            if (reverse)
-                finishedFrom = true;
-            else
+            if (reverse) {
+                finishedFrom = true; 
+            }else {
                 finishedTo = true;
+            }
 
             // no path should be calculated
             setUpdateBestPath(false);
         }
 
         public void setStartNode(int startNode) {
-            if (reverse)
-                initTo(startNode, 0);
-            else
+            if (reverse) {
+                initTo(startNode, 0); 
+            }else {
                 initFrom(startNode, 0);
+            }
         }
 
         @Override
         protected double calcWeight(EdgeIteratorState iter, SPTEntry currEdge, boolean reverse) {
-            if (!accessFilter.accept(iter))
+            if (!accessFilter.accept(iter)) {
                 return Double.POSITIVE_INFINITY;
+            }
             return GHUtility.calcWeightWithTurnWeight(weighting, iter, reverse, currEdge.edge) + currEdge.getWeightOfVisitedPath();
         }
 
@@ -814,8 +866,9 @@ public class LandmarkStorage {
         }
 
         SPTEntry getLastEntry() {
-            if (!finished())
+            if (!finished()) {
                 throw new IllegalStateException("Cannot get max weight if not yet finished");
+            }
             return lastEntry;
         }
 
@@ -831,8 +884,9 @@ public class LandmarkStorage {
         }
 
         public boolean setSubnetworks(final byte[] subnetworks, final int subnetworkId) {
-            if (subnetworkId > 127)
+            if (subnetworkId > 127) {
                 throw new IllegalStateException("Too many subnetworks " + subnetworkId);
+            }
 
             final AtomicBoolean failed = new AtomicBoolean(false);
             IntObjectMap<SPTEntry> map = reverse ? bestWeightMapTo : bestWeightMapFrom;
@@ -874,15 +928,16 @@ public class LandmarkStorage {
             });
 
             if ((double) maxedout.get() / map.size() > 0.1) {
-                LOGGER.warn("landmark " + lmIdx + " (" + nodeAccess.getLat(lmNodeId) + "," + nodeAccess.getLon(lmNodeId) + "): " +
-                        "too many weights were maxed out (" + maxedout.get() + "/" + map.size() + "). Use a bigger factor than " + lms.factor
+                LOGGER.warn("landmark " + lmIdx + " (" + nodeAccess.getLat(lmNodeId) + "," + nodeAccess.getLon(lmNodeId) + "): "
+                        + "too many weights were maxed out (" + maxedout.get() + "/" + map.size() + "). Use a bigger factor than " + lms.factor
                         + ". For example use maximum_lm_weight: " + finalMaxWeight.getValue() * 1.2 + " in your LM profile definition");
             }
         }
     }
 
     /**
-     * Sort landmark by weight and let maximum weight come first, to pick best active landmarks.
+     * Sort landmark by weight and let maximum weight come first, to pick best
+     * active landmarks.
      */
     final static Comparator<Map.Entry<Integer, Integer>> SORT_BY_WEIGHT = new Comparator<Map.Entry<Integer, Integer>>() {
         @Override
