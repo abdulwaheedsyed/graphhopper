@@ -17,41 +17,41 @@
  */
 package com.graphhopper.routing.lm;
 
-import com.graphhopper.routing.AStar;
-import com.graphhopper.routing.AlgorithmOptions;
-import com.graphhopper.routing.Path;
-import com.graphhopper.routing.RoutingAlgorithm;
-import com.graphhopper.routing.ev.*;
-import com.graphhopper.routing.querygraph.QueryGraph;
-import com.graphhopper.routing.util.EdgeFilter;
-import com.graphhopper.routing.util.EncodingManager;
-import com.graphhopper.routing.util.TraversalMode;
-import com.graphhopper.routing.weighting.SpeedWeighting;
-import com.graphhopper.routing.weighting.Weighting;
-import com.graphhopper.routing.weighting.custom.CustomModelParser;
-import com.graphhopper.storage.BaseGraph;
-import com.graphhopper.storage.Directory;
-import com.graphhopper.storage.RAMDirectory;
-import com.graphhopper.storage.index.LocationIndexTree;
-import com.graphhopper.storage.index.Snap;
-import com.graphhopper.util.GHUtility;
-import com.graphhopper.util.Helper;
-import com.graphhopper.util.PMap;
-import com.graphhopper.util.Parameters;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import static com.graphhopper.util.GHUtility.updateDistancesFor;
-import static com.graphhopper.util.Parameters.Algorithms.ASTAR;
-import static com.graphhopper.util.Parameters.Algorithms.ASTAR_BI;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.graphhopper.routing.AStar;
+import com.graphhopper.routing.AlgorithmOptions;
+import com.graphhopper.routing.Path;
+import com.graphhopper.routing.RoutingAlgorithm;
+import com.graphhopper.routing.ev.DecimalEncodedValue;
+import com.graphhopper.routing.ev.DecimalEncodedValueImpl;
+import com.graphhopper.routing.ev.Subnetwork;
+import com.graphhopper.routing.querygraph.QueryGraph;
+import com.graphhopper.routing.util.EdgeFilter;
+import com.graphhopper.routing.util.EncodingManager;
+import com.graphhopper.routing.util.TraversalMode;
+import com.graphhopper.routing.weighting.SpeedWeighting;
+import com.graphhopper.routing.weighting.Weighting;
+import com.graphhopper.storage.BaseGraph;
+import com.graphhopper.storage.Directory;
+import com.graphhopper.storage.RAMDirectory;
+import com.graphhopper.storage.index.LocationIndexTree;
+import com.graphhopper.storage.index.Snap;
+import static com.graphhopper.util.GHUtility.updateDistancesFor;
+import com.graphhopper.util.Helper;
+import com.graphhopper.util.PMap;
+import com.graphhopper.util.Parameters;
+import static com.graphhopper.util.Parameters.Algorithms.ASTAR;
+import static com.graphhopper.util.Parameters.Algorithms.ASTAR_BI;
 
 /**
  * @author Peter Karich

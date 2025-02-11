@@ -30,7 +30,6 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.graphhopper.util.Helper;
 import com.graphhopper.util.Instruction;
 import com.graphhopper.util.InstructionList;
-
 import static com.graphhopper.util.Parameters.Details.STREET_NAME;
 
 public class InstructionListSerializer extends JsonSerializer<InstructionList> {

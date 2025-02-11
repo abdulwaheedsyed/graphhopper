@@ -17,15 +17,19 @@
  */
 package com.graphhopper.util.details;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
 import com.graphhopper.routing.Path;
 import com.graphhopper.routing.ev.EncodedValueLookup;
 import com.graphhopper.routing.weighting.Weighting;
 import com.graphhopper.storage.Graph;
 import com.graphhopper.util.EdgeIteratorState;
 import com.graphhopper.util.FetchMode;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * This class calculates a PathDetail list in a similar fashion to the instruction calculation,

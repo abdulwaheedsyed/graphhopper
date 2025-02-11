@@ -17,24 +17,36 @@
  */
 package com.graphhopper.routing.util.parsers;
 
-import com.graphhopper.reader.ReaderNode;
-import com.graphhopper.reader.ReaderRelation;
-import com.graphhopper.reader.ReaderWay;
-import com.graphhopper.routing.ev.*;
-import com.graphhopper.routing.util.EncodingManager;
-import com.graphhopper.routing.util.OSMParsers;
-import com.graphhopper.routing.util.PriorityCode;
-import com.graphhopper.storage.IntsRef;
-import com.graphhopper.util.Helper;
-import com.graphhopper.util.PMap;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.text.DateFormat;
-import java.util.Date;
-
-import static com.graphhopper.routing.util.PriorityCode.*;
-import static org.junit.jupiter.api.Assertions.*;
+import com.graphhopper.reader.ReaderNode;
+import com.graphhopper.reader.ReaderRelation;
+import com.graphhopper.reader.ReaderWay;
+import com.graphhopper.routing.ev.ArrayEdgeIntAccess;
+import com.graphhopper.routing.ev.BikeNetwork;
+import com.graphhopper.routing.ev.BooleanEncodedValue;
+import com.graphhopper.routing.ev.DecimalEncodedValue;
+import com.graphhopper.routing.ev.EdgeIntAccess;
+import com.graphhopper.routing.ev.EncodedValueLookup;
+import com.graphhopper.routing.ev.EnumEncodedValue;
+import com.graphhopper.routing.ev.MtbNetwork;
+import com.graphhopper.routing.ev.RouteNetwork;
+import com.graphhopper.routing.ev.Smoothness;
+import com.graphhopper.routing.util.EncodingManager;
+import com.graphhopper.routing.util.OSMParsers;
+import com.graphhopper.routing.util.PriorityCode;
+import static com.graphhopper.routing.util.PriorityCode.AVOID_MORE;
+import static com.graphhopper.routing.util.PriorityCode.BAD;
+import static com.graphhopper.routing.util.PriorityCode.PREFER;
+import static com.graphhopper.routing.util.PriorityCode.SLIGHT_AVOID;
+import static com.graphhopper.routing.util.PriorityCode.UNCHANGED;
+import static com.graphhopper.routing.util.PriorityCode.VERY_NICE;
+import com.graphhopper.storage.IntsRef;
+import com.graphhopper.util.PMap;
 
 /**
  * @author Peter Karich

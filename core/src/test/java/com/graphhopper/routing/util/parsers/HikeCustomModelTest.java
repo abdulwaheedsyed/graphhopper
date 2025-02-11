@@ -1,11 +1,23 @@
 package com.graphhopper.routing.util.parsers;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.graphhopper.reader.ReaderWay;
-import com.graphhopper.routing.ev.*;
+import com.graphhopper.routing.ev.EdgeIntAccess;
+import com.graphhopper.routing.ev.FerrySpeed;
+import com.graphhopper.routing.ev.FootNetwork;
+import com.graphhopper.routing.ev.FootRoadAccess;
+import com.graphhopper.routing.ev.HikeRating;
+import com.graphhopper.routing.ev.IntEncodedValue;
+import com.graphhopper.routing.ev.RouteNetwork;
+import com.graphhopper.routing.ev.VehicleAccess;
+import com.graphhopper.routing.ev.VehiclePriority;
+import com.graphhopper.routing.ev.VehicleSpeed;
 import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.routing.util.OSMParsers;
 import com.graphhopper.routing.util.PriorityCode;
-import com.graphhopper.routing.util.TransportationMode;
 import com.graphhopper.routing.weighting.custom.CustomModelParser;
 import com.graphhopper.routing.weighting.custom.CustomWeighting;
 import com.graphhopper.storage.BaseGraph;
@@ -13,10 +25,6 @@ import com.graphhopper.util.CustomModel;
 import com.graphhopper.util.EdgeIteratorState;
 import com.graphhopper.util.GHUtility;
 import com.graphhopper.util.PMap;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HikeCustomModelTest {
 

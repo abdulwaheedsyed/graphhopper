@@ -1,5 +1,20 @@
 package com.graphhopper.routing;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.graphhopper.routing.ch.CHRoutingAlgorithmFactory;
 import com.graphhopper.routing.ch.PrepareContractionHierarchies;
 import com.graphhopper.routing.ev.DecimalEncodedValue;
@@ -19,24 +34,8 @@ import com.graphhopper.storage.RoutingCHGraphImpl;
 import com.graphhopper.storage.index.LocationIndexTree;
 import com.graphhopper.storage.index.Snap;
 import com.graphhopper.util.GHUtility;
-import com.graphhopper.util.Helper;
-import com.graphhopper.util.PMap;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
-import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Stream;
-
 import static com.graphhopper.util.GHUtility.createRandomSnaps;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import com.graphhopper.util.PMap;
 
 public class RandomCHRoutingTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(RandomCHRoutingTest.class);

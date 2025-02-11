@@ -18,14 +18,14 @@
 
 package com.graphhopper.storage.index;
 
-import com.graphhopper.storage.BaseGraph;
-import com.graphhopper.storage.NodeAccess;
-import com.graphhopper.util.EdgeIteratorState;
-import com.graphhopper.util.shapes.GHPoint;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
+import com.graphhopper.storage.BaseGraph;
+import com.graphhopper.storage.NodeAccess;
 import static com.graphhopper.util.DistancePlaneProjection.DIST_PLANE;
-import static org.junit.jupiter.api.Assertions.*;
+import com.graphhopper.util.EdgeIteratorState;
+import com.graphhopper.util.shapes.GHPoint;
 
 class SnapTest {
 

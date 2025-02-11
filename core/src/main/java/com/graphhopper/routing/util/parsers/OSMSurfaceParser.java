@@ -18,12 +18,11 @@
 package com.graphhopper.routing.util.parsers;
 
 import com.graphhopper.reader.ReaderWay;
-import com.graphhopper.routing.ev.EnumEncodedValue;
 import com.graphhopper.routing.ev.EdgeIntAccess;
+import com.graphhopper.routing.ev.EnumEncodedValue;
 import com.graphhopper.routing.ev.Surface;
+import static com.graphhopper.routing.ev.Surface.MISSING;
 import com.graphhopper.storage.IntsRef;
-
-import static com.graphhopper.routing.ev.Surface.*;
 
 public class OSMSurfaceParser implements TagParser {
 

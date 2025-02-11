@@ -17,29 +17,56 @@
  */
 package com.graphhopper.tools;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import static java.lang.System.nanoTime;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+import java.util.TreeSet;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.GraphHopper;
 import com.graphhopper.GraphHopperConfig;
 import com.graphhopper.config.CHProfile;
 import com.graphhopper.config.LMProfile;
-import com.graphhopper.util.TurnCostsConfig;
 import com.graphhopper.routing.TestProfiles;
+import static com.graphhopper.routing.ch.CHParameters.CONTRACTED_NODES;
+import static com.graphhopper.routing.ch.CHParameters.EDGE_QUOTIENT_WEIGHT;
+import static com.graphhopper.routing.ch.CHParameters.HIERARCHY_DEPTH_WEIGHT;
+import static com.graphhopper.routing.ch.CHParameters.LAST_LAZY_NODES_UPDATES;
+import static com.graphhopper.routing.ch.CHParameters.LOG_MESSAGES;
+import static com.graphhopper.routing.ch.CHParameters.MAX_POLL_FACTOR_CONTRACTION_EDGE;
+import static com.graphhopper.routing.ch.CHParameters.MAX_POLL_FACTOR_CONTRACTION_NODE;
+import static com.graphhopper.routing.ch.CHParameters.MAX_POLL_FACTOR_HEURISTIC_EDGE;
+import static com.graphhopper.routing.ch.CHParameters.MAX_POLL_FACTOR_HEURISTIC_NODE;
+import static com.graphhopper.routing.ch.CHParameters.NEIGHBOR_UPDATES;
+import static com.graphhopper.routing.ch.CHParameters.NEIGHBOR_UPDATES_MAX;
+import static com.graphhopper.routing.ch.CHParameters.ORIGINAL_EDGE_QUOTIENT_WEIGHT;
+import static com.graphhopper.routing.ch.CHParameters.PERIODIC_UPDATES;
 import com.graphhopper.storage.Graph;
 import com.graphhopper.storage.NodeAccess;
-import com.graphhopper.util.*;
-import com.graphhopper.util.exceptions.ConnectionNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-
-import static com.graphhopper.routing.ch.CHParameters.*;
+import com.graphhopper.util.Helper;
+import com.graphhopper.util.MiniPerfTest;
+import com.graphhopper.util.PMap;
+import com.graphhopper.util.Parameters;
 import static com.graphhopper.util.Parameters.Algorithms.ASTAR_BI;
 import static com.graphhopper.util.Parameters.Algorithms.DIJKSTRA_BI;
-import static java.lang.System.nanoTime;
+import com.graphhopper.util.StopWatch;
+import com.graphhopper.util.TurnCostsConfig;
+import com.graphhopper.util.exceptions.ConnectionNotFoundException;
 
 public class CHMeasurement {
     private static final Logger LOGGER = LoggerFactory.getLogger(CHMeasurement.class);

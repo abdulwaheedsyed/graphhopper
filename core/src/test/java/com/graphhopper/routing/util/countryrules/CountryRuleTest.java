@@ -17,6 +17,9 @@
  */
 package com.graphhopper.routing.util.countryrules;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
 import com.graphhopper.reader.ReaderWay;
 import com.graphhopper.routing.ev.RoadAccess;
 import com.graphhopper.routing.ev.Toll;
@@ -24,10 +27,6 @@ import com.graphhopper.routing.util.TransportationMode;
 import com.graphhopper.routing.util.countryrules.europe.AustriaCountryRule;
 import com.graphhopper.routing.util.countryrules.europe.GermanyCountryRule;
 import com.graphhopper.routing.util.countryrules.europe.HungaryCountryRule;
-
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CountryRuleTest {
 

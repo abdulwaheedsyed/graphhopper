@@ -17,6 +17,31 @@
  */
 package com.graphhopper.resources;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import static java.util.stream.Collectors.toList;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.GraphHopper;
@@ -27,26 +52,23 @@ import com.graphhopper.http.GHRequestTransformer;
 import com.graphhopper.http.ProfileResolver;
 import com.graphhopper.jackson.MultiException;
 import com.graphhopper.jackson.ResponsePathSerializer;
-import com.graphhopper.util.*;
-import com.graphhopper.util.shapes.GHPoint;
-import io.dropwizard.jersey.params.AbstractParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.graphhopper.util.Constants;
+import com.graphhopper.util.Helper;
+import com.graphhopper.util.InstructionList;
+import com.graphhopper.util.PMap;
 import static com.graphhopper.util.Parameters.Details.PATH_DETAILS;
-import static com.graphhopper.util.Parameters.Routing.*;
-import static java.util.stream.Collectors.toList;
+import static com.graphhopper.util.Parameters.Routing.ALGORITHM;
+import static com.graphhopper.util.Parameters.Routing.CALC_POINTS;
+import static com.graphhopper.util.Parameters.Routing.CURBSIDE;
+import static com.graphhopper.util.Parameters.Routing.ELEVATION_WAY_POINT_MAX_DISTANCE;
+import static com.graphhopper.util.Parameters.Routing.INSTRUCTIONS;
+import static com.graphhopper.util.Parameters.Routing.POINT_HINT;
+import static com.graphhopper.util.Parameters.Routing.SNAP_PREVENTION;
+import static com.graphhopper.util.Parameters.Routing.WAY_POINT_MAX_DISTANCE;
+import com.graphhopper.util.StopWatch;
+import com.graphhopper.util.shapes.GHPoint;
+
+import io.dropwizard.jersey.params.AbstractParam;
 
 /**
  * Resource to use GraphHopper in a remote client application like mobile or browser. Note: If type

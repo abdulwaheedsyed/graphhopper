@@ -18,25 +18,32 @@
 
 package com.graphhopper.routing.lm;
 
-import com.graphhopper.routing.*;
-import com.graphhopper.routing.ev.*;
-import com.graphhopper.routing.util.EncodingManager;
-import com.graphhopper.routing.weighting.SpeedWeighting;
-import com.graphhopper.routing.weighting.Weighting;
-import com.graphhopper.routing.weighting.custom.CustomModelParser;
-import com.graphhopper.storage.BaseGraph;
-import com.graphhopper.storage.Directory;
-import com.graphhopper.storage.NodeAccess;
-import com.graphhopper.storage.RAMDirectory;
-import com.graphhopper.util.GHUtility;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
+import com.graphhopper.routing.AStar;
+import com.graphhopper.routing.AStarBidirection;
+import com.graphhopper.routing.AlgorithmOptions;
+import com.graphhopper.routing.Dijkstra;
+import com.graphhopper.routing.DijkstraBidirectionRef;
+import com.graphhopper.routing.Path;
+import com.graphhopper.routing.RoutingAlgorithm;
+import com.graphhopper.routing.ev.DecimalEncodedValue;
+import com.graphhopper.routing.ev.DecimalEncodedValueImpl;
+import com.graphhopper.routing.ev.Subnetwork;
+import com.graphhopper.routing.ev.TurnCost;
+import com.graphhopper.routing.util.EncodingManager;
 import static com.graphhopper.routing.util.TraversalMode.NODE_BASED;
+import com.graphhopper.routing.weighting.SpeedWeighting;
+import com.graphhopper.routing.weighting.Weighting;
+import com.graphhopper.storage.BaseGraph;
+import com.graphhopper.storage.Directory;
+import com.graphhopper.storage.NodeAccess;
+import com.graphhopper.storage.RAMDirectory;
 import static com.graphhopper.util.Parameters.Algorithms.ASTAR;
 import static com.graphhopper.util.Parameters.Algorithms.ASTAR_BI;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LMIssueTest {
     private Directory dir;

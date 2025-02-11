@@ -17,14 +17,18 @@
  */
 package com.graphhopper.routing.util.parsers;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.graphhopper.reader.ReaderNode;
 import com.graphhopper.reader.ReaderWay;
 import com.graphhopper.routing.ev.BooleanEncodedValue;
 import com.graphhopper.routing.ev.EdgeIntAccess;
-import com.graphhopper.routing.util.TransportationMode;
 import com.graphhopper.storage.IntsRef;
-
-import java.util.*;
 
 public abstract class AbstractAccessParser implements TagParser {
     static final Collection<String> ONEWAYS = Arrays.asList("yes", "true", "1", "-1");

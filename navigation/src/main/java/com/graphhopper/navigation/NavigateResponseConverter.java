@@ -17,8 +17,6 @@
  */
 package com.graphhopper.navigation;
 
-import static com.graphhopper.util.Parameters.Details.INTERSECTION;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +38,7 @@ import com.graphhopper.jackson.ResponsePathSerializer;
 import com.graphhopper.util.Helper;
 import com.graphhopper.util.Instruction;
 import com.graphhopper.util.InstructionList;
+import static com.graphhopper.util.Parameters.Details.INTERSECTION;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.RoundaboutInstruction;
 import com.graphhopper.util.TranslationMap;

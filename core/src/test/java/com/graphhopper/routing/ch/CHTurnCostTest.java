@@ -17,27 +17,17 @@
  */
 package com.graphhopper.routing.ch;
 
-import com.carrotsearch.hppc.IntArrayList;
-import com.graphhopper.routing.Dijkstra;
-import com.graphhopper.routing.DijkstraBidirectionEdgeCHNoSOD;
-import com.graphhopper.routing.Path;
-import com.graphhopper.routing.RoutingAlgorithm;
-import com.graphhopper.routing.ev.DecimalEncodedValue;
-import com.graphhopper.routing.ev.DecimalEncodedValueImpl;
-import com.graphhopper.routing.ev.EncodedValueLookup;
-import com.graphhopper.routing.ev.TurnCost;
-import com.graphhopper.routing.querygraph.QueryGraph;
-import com.graphhopper.routing.querygraph.QueryRoutingCHGraph;
-import com.graphhopper.routing.util.EdgeFilter;
-import com.graphhopper.routing.util.EncodingManager;
-import com.graphhopper.routing.util.TraversalMode;
-import com.graphhopper.routing.weighting.SpeedWeighting;
-import com.graphhopper.routing.weighting.Weighting;
-import com.graphhopper.storage.*;
-import com.graphhopper.storage.index.LocationIndexTree;
-import com.graphhopper.storage.index.Snap;
-import com.graphhopper.util.*;
-import com.graphhopper.util.shapes.GHPoint;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
@@ -46,14 +36,47 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-
-import static com.graphhopper.routing.ch.CHParameters.*;
+import com.carrotsearch.hppc.IntArrayList;
+import com.graphhopper.routing.Dijkstra;
+import com.graphhopper.routing.DijkstraBidirectionEdgeCHNoSOD;
+import com.graphhopper.routing.Path;
+import com.graphhopper.routing.RoutingAlgorithm;
+import static com.graphhopper.routing.ch.CHParameters.LAST_LAZY_NODES_UPDATES;
+import static com.graphhopper.routing.ch.CHParameters.LOG_MESSAGES;
+import static com.graphhopper.routing.ch.CHParameters.NEIGHBOR_UPDATES;
+import static com.graphhopper.routing.ch.CHParameters.PERIODIC_UPDATES;
+import com.graphhopper.routing.ev.DecimalEncodedValue;
+import com.graphhopper.routing.ev.DecimalEncodedValueImpl;
+import com.graphhopper.routing.ev.TurnCost;
+import com.graphhopper.routing.querygraph.QueryGraph;
+import com.graphhopper.routing.querygraph.QueryRoutingCHGraph;
+import com.graphhopper.routing.util.EdgeFilter;
+import com.graphhopper.routing.util.EncodingManager;
+import com.graphhopper.routing.util.TraversalMode;
+import com.graphhopper.routing.weighting.SpeedWeighting;
+import com.graphhopper.routing.weighting.Weighting;
+import com.graphhopper.storage.BaseGraph;
+import com.graphhopper.storage.CHConfig;
+import com.graphhopper.storage.NodeAccess;
+import com.graphhopper.storage.RAMDirectory;
+import com.graphhopper.storage.RoutingCHEdgeIteratorState;
+import com.graphhopper.storage.RoutingCHGraph;
+import com.graphhopper.storage.RoutingCHGraphImpl;
+import com.graphhopper.storage.TurnCostStorage;
+import com.graphhopper.storage.index.LocationIndexTree;
+import com.graphhopper.storage.index.Snap;
+import com.graphhopper.util.ArrayUtil;
+import com.graphhopper.util.DistancePlaneProjection;
+import com.graphhopper.util.EdgeExplorer;
+import com.graphhopper.util.EdgeIterator;
+import com.graphhopper.util.EdgeIteratorState;
+import com.graphhopper.util.GHUtility;
 import static com.graphhopper.util.GHUtility.updateDistancesFor;
+import com.graphhopper.util.PMap;
 import static com.graphhopper.util.Parameters.Algorithms.ASTAR_BI;
 import static com.graphhopper.util.Parameters.Algorithms.DIJKSTRA_BI;
 import static com.graphhopper.util.Parameters.Routing.ALGORITHM;
-import static org.junit.jupiter.api.Assertions.*;
+import com.graphhopper.util.shapes.GHPoint;
 
 /**
  * Here we test if Contraction Hierarchies work with turn costs, i.e. we first contract the graph and then run

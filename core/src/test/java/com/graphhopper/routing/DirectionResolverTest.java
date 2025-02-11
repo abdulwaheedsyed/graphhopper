@@ -17,6 +17,15 @@
  */
 package com.graphhopper.routing;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static com.graphhopper.routing.DirectionResolverResult.impossible;
+import static com.graphhopper.routing.DirectionResolverResult.onlyLeft;
+import static com.graphhopper.routing.DirectionResolverResult.onlyRight;
+import static com.graphhopper.routing.DirectionResolverResult.restricted;
+import static com.graphhopper.routing.DirectionResolverResult.unrestricted;
 import com.graphhopper.routing.ev.BooleanEncodedValue;
 import com.graphhopper.routing.ev.DecimalEncodedValue;
 import com.graphhopper.routing.ev.DecimalEncodedValueImpl;
@@ -31,12 +40,6 @@ import com.graphhopper.util.EdgeIterator;
 import com.graphhopper.util.EdgeIteratorState;
 import com.graphhopper.util.GHUtility;
 import com.graphhopper.util.shapes.GHPoint;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import static com.graphhopper.routing.DirectionResolverResult.*;
-import static com.graphhopper.util.Helper.createPointList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tests {@link DirectionResolver} on a simple graph (no {@link QueryGraph}.

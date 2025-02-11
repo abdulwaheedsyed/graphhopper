@@ -17,13 +17,11 @@
  */
 package com.graphhopper.coll;
 
-import com.carrotsearch.hppc.LongArrayList;
-import com.carrotsearch.hppc.cursors.IntCursor;
-import com.carrotsearch.hppc.predicates.IntPredicate;
-
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+
+import com.carrotsearch.hppc.cursors.IntCursor;
 
 /**
  * A priority queue implemented by a treemap to allow fast key update. Or should we use a standard

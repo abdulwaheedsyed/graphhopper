@@ -17,27 +17,46 @@
  */
 package com.graphhopper.routing.ch;
 
+import java.util.Random;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.carrotsearch.hppc.IntArrayList;
 import com.carrotsearch.hppc.IntIndexedContainer;
 import com.graphhopper.routing.Dijkstra;
 import com.graphhopper.routing.Path;
 import com.graphhopper.routing.RoutingAlgorithm;
-import com.graphhopper.routing.ev.*;
+import com.graphhopper.routing.ev.DecimalEncodedValue;
+import com.graphhopper.routing.ev.DecimalEncodedValueImpl;
+import com.graphhopper.routing.ev.TurnCost;
 import com.graphhopper.routing.querygraph.QueryGraph;
-import com.graphhopper.routing.util.*;
+import com.graphhopper.routing.util.AllEdgesIterator;
+import com.graphhopper.routing.util.EncodingManager;
+import com.graphhopper.routing.util.TraversalMode;
 import com.graphhopper.routing.weighting.SpeedWeighting;
 import com.graphhopper.routing.weighting.Weighting;
-import com.graphhopper.routing.weighting.custom.CustomModelParser;
-import com.graphhopper.storage.*;
+import com.graphhopper.storage.BaseGraph;
+import com.graphhopper.storage.CHConfig;
+import com.graphhopper.storage.CHStorage;
+import com.graphhopper.storage.Graph;
+import com.graphhopper.storage.RoutingCHEdgeExplorer;
+import com.graphhopper.storage.RoutingCHEdgeIterator;
+import com.graphhopper.storage.RoutingCHEdgeIteratorState;
+import com.graphhopper.storage.RoutingCHGraph;
+import com.graphhopper.storage.RoutingCHGraphImpl;
 import com.graphhopper.storage.index.Snap;
-import com.graphhopper.util.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.util.Random;
-
+import com.graphhopper.util.BitUtil;
+import com.graphhopper.util.DistanceCalcEuclidean;
+import com.graphhopper.util.EdgeIterator;
+import com.graphhopper.util.EdgeIteratorState;
+import com.graphhopper.util.GHUtility;
 import static com.graphhopper.util.GHUtility.updateDistancesFor;
-import static org.junit.jupiter.api.Assertions.*;
+import com.graphhopper.util.PMap;
 
 /**
  * @author Peter Karich

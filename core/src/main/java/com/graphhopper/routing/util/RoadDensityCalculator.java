@@ -18,24 +18,22 @@
 
 package com.graphhopper.routing.util;
 
-import com.carrotsearch.hppc.IntArrayDeque;
-import com.carrotsearch.hppc.IntScatterSet;
-import com.carrotsearch.hppc.IntSet;
-import com.graphhopper.storage.Graph;
-import com.graphhopper.storage.NodeAccess;
-import com.graphhopper.util.EdgeExplorer;
-import com.graphhopper.util.EdgeIterator;
-import com.graphhopper.util.EdgeIteratorState;
-import com.graphhopper.util.GHUtility;
-import com.graphhopper.util.shapes.GHPoint;
-
-import java.util.concurrent.Callable;
 import java.util.function.BiConsumer;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import com.carrotsearch.hppc.IntArrayDeque;
+import com.carrotsearch.hppc.IntScatterSet;
+import com.carrotsearch.hppc.IntSet;
+import com.graphhopper.storage.Graph;
+import com.graphhopper.storage.NodeAccess;
 import static com.graphhopper.util.DistancePlaneProjection.DIST_PLANE;
+import com.graphhopper.util.EdgeExplorer;
+import com.graphhopper.util.EdgeIterator;
+import com.graphhopper.util.EdgeIteratorState;
+import com.graphhopper.util.GHUtility;
+import com.graphhopper.util.shapes.GHPoint;
 
 public class RoadDensityCalculator {
     private final Graph graph;

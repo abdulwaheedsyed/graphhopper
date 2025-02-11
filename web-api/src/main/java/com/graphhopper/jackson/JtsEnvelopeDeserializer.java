@@ -17,13 +17,13 @@
  */
 package com.graphhopper.jackson;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import java.io.IOException;
+
 import org.locationtech.jts.geom.Envelope;
 
-import java.io.IOException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 
 class JtsEnvelopeDeserializer extends JsonDeserializer<Envelope> {
     @Override

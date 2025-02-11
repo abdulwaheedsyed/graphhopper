@@ -17,8 +17,6 @@
  */
 package com.graphhopper.util.details;
 
-import static com.graphhopper.util.Parameters.Details.INTERSECTION;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +33,7 @@ import com.graphhopper.util.EdgeIterator;
 import com.graphhopper.util.EdgeIteratorState;
 import com.graphhopper.util.FetchMode;
 import com.graphhopper.util.GHUtility;
+import static com.graphhopper.util.Parameters.Details.INTERSECTION;
 import com.graphhopper.util.PointList;
 
 /**

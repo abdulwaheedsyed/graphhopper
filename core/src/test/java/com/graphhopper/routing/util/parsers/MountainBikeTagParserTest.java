@@ -17,20 +17,35 @@
  */
 package com.graphhopper.routing.util.parsers;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+
 import com.graphhopper.reader.ReaderNode;
 import com.graphhopper.reader.ReaderRelation;
 import com.graphhopper.reader.ReaderWay;
-import com.graphhopper.reader.osm.conditional.DateRangeParser;
-import com.graphhopper.routing.ev.*;
+import com.graphhopper.routing.ev.BikeNetwork;
+import com.graphhopper.routing.ev.EncodedValueLookup;
+import com.graphhopper.routing.ev.FerrySpeed;
+import com.graphhopper.routing.ev.MtbNetwork;
+import com.graphhopper.routing.ev.Roundabout;
+import com.graphhopper.routing.ev.RouteNetwork;
+import com.graphhopper.routing.ev.Smoothness;
+import com.graphhopper.routing.ev.VehicleAccess;
+import com.graphhopper.routing.ev.VehiclePriority;
+import com.graphhopper.routing.ev.VehicleSpeed;
 import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.routing.util.PriorityCode;
-import com.graphhopper.util.PMap;
-import org.junit.jupiter.api.Test;
-
-import static com.graphhopper.routing.util.PriorityCode.*;
+import static com.graphhopper.routing.util.PriorityCode.BAD;
+import static com.graphhopper.routing.util.PriorityCode.BEST;
+import static com.graphhopper.routing.util.PriorityCode.PREFER;
+import static com.graphhopper.routing.util.PriorityCode.SLIGHT_AVOID;
+import static com.graphhopper.routing.util.PriorityCode.SLIGHT_PREFER;
+import static com.graphhopper.routing.util.PriorityCode.VERY_NICE;
 import static com.graphhopper.routing.util.parsers.BikeCommonAverageSpeedParser.MIN_SPEED;
 import static com.graphhopper.routing.util.parsers.BikeCommonAverageSpeedParser.PUSHING_SECTION_SPEED;
-import static org.junit.jupiter.api.Assertions.*;
+import com.graphhopper.util.PMap;
 
 public class MountainBikeTagParserTest extends AbstractBikeTagParserTester {
     @Override

@@ -17,9 +17,19 @@
  */
 package com.graphhopper.isochrone.algorithm;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import static java.util.Comparator.comparingDouble;
+import static java.util.Comparator.comparingLong;
+import java.util.PriorityQueue;
+import java.util.function.Consumer;
+
 import com.carrotsearch.hppc.IntObjectHashMap;
 import com.carrotsearch.hppc.cursors.ObjectCursor;
 import com.graphhopper.coll.GHIntObjectHashMap;
+import static com.graphhopper.isochrone.algorithm.ShortestPathTree.ExploreType.DISTANCE;
+import static com.graphhopper.isochrone.algorithm.ShortestPathTree.ExploreType.TIME;
+import static com.graphhopper.isochrone.algorithm.ShortestPathTree.ExploreType.WEIGHT;
 import com.graphhopper.routing.AbstractRoutingAlgorithm;
 import com.graphhopper.routing.Path;
 import com.graphhopper.routing.util.TraversalMode;
@@ -27,16 +37,6 @@ import com.graphhopper.routing.weighting.Weighting;
 import com.graphhopper.storage.Graph;
 import com.graphhopper.util.EdgeIterator;
 import com.graphhopper.util.GHUtility;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.PriorityQueue;
-import java.util.function.Consumer;
-
-import static com.graphhopper.isochrone.algorithm.ShortestPathTree.ExploreType.*;
-import static java.util.Comparator.comparingDouble;
-import static java.util.Comparator.comparingLong;
 
 /**
  * Computes a shortest path tree by a given weighting. Terminates when all shortest paths up to

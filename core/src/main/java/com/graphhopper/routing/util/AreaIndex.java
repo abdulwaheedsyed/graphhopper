@@ -18,14 +18,17 @@
 
 package com.graphhopper.routing.util;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geom.prep.PreparedGeometry;
-import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
-import org.locationtech.jts.geom.prep.PreparedPolygon;
-import org.locationtech.jts.index.strtree.STRtree;
-
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.prep.PreparedGeometry;
+import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
+import org.locationtech.jts.index.strtree.STRtree;
 
 public class AreaIndex<T extends AreaIndex.Area> {
 

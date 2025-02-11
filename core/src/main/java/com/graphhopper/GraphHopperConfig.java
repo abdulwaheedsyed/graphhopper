@@ -18,17 +18,16 @@
 
 package com.graphhopper;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.graphhopper.config.CHProfile;
 import com.graphhopper.config.LMProfile;
 import com.graphhopper.config.Profile;
-import com.graphhopper.jackson.ResponsePathSerializer;
 import com.graphhopper.util.PMap;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class represents the global configuration for the GraphHopper class, which is typically configured via the

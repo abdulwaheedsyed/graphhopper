@@ -1,9 +1,8 @@
 package com.graphhopper.api;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-import java.io.IOException;
 import java.util.HashMap;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * @author Peter Karich

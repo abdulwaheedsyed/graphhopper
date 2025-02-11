@@ -17,6 +17,25 @@
  */
 package com.graphhopper.routing.lm;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.bedatadriven.jackson.datatype.jts.JtsModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.graphhopper.GraphHopperConfig;
@@ -28,23 +47,12 @@ import com.graphhopper.storage.BaseGraph;
 import com.graphhopper.storage.StorableProperties;
 import com.graphhopper.storage.index.LocationIndex;
 import com.graphhopper.util.GHUtility;
+import static com.graphhopper.util.Helper.UTF_CS;
+import static com.graphhopper.util.Helper.createFormatter;
+import static com.graphhopper.util.Helper.getMemInfo;
 import com.graphhopper.util.JsonFeatureCollection;
 import com.graphhopper.util.Parameters;
 import com.graphhopper.util.Parameters.Landmark;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URL;
-import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static com.graphhopper.util.Helper.*;
 
 /**
  * This class deals with the A*, landmark and triangulation (ALT) preparations.

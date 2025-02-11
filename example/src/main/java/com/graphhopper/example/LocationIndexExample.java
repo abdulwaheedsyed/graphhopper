@@ -1,9 +1,10 @@
 package com.graphhopper.example;
 
+import java.util.Map;
+
 import com.graphhopper.GraphHopper;
 import com.graphhopper.config.Profile;
 import com.graphhopper.routing.util.EdgeFilter;
-import com.graphhopper.search.KVStorage;
 import com.graphhopper.search.KVStorage.KValue;
 import com.graphhopper.storage.BaseGraph;
 import com.graphhopper.storage.index.LocationIndex;
@@ -11,8 +12,6 @@ import com.graphhopper.storage.index.LocationIndexTree;
 import com.graphhopper.storage.index.Snap;
 import com.graphhopper.util.EdgeIteratorState;
 import com.graphhopper.util.GHUtility;
-
-import java.util.Map;
 
 public class LocationIndexExample {
     public static void main(String[] args) {

@@ -1,12 +1,11 @@
 package com.graphhopper.routing.util.parsers;
 
-import com.graphhopper.routing.ev.MaxSpeed;
-import com.graphhopper.routing.util.parsers.helpers.OSMValueExtractor;
-import org.junit.jupiter.api.Test;
-
-import static com.graphhopper.routing.util.parsers.helpers.OSMValueExtractor.conditionalWeightToTons;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+
+import com.graphhopper.routing.util.parsers.helpers.OSMValueExtractor;
+import static com.graphhopper.routing.util.parsers.helpers.OSMValueExtractor.conditionalWeightToTons;
 
 public class OSMValueExtractorTest {
 

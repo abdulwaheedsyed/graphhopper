@@ -17,22 +17,23 @@
  */
 package com.graphhopper.routing.util;
 
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+
 import com.graphhopper.routing.ev.DecimalEncodedValue;
 import com.graphhopper.routing.ev.DecimalEncodedValueImpl;
 import com.graphhopper.routing.ev.SimpleBooleanEncodedValue;
-import com.graphhopper.search.KVStorage;
+import com.graphhopper.search.KVStorage.KValue;
 import com.graphhopper.storage.BaseGraph;
 import com.graphhopper.storage.NodeAccess;
 import com.graphhopper.util.EdgeIteratorState;
+import static com.graphhopper.util.Parameters.Details.STREET_NAME;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.shapes.GHPoint;
-import org.junit.jupiter.api.Test;
-
-import java.util.Map;
-
-import static com.graphhopper.search.KVStorage.KValue;
-import static com.graphhopper.util.Parameters.Details.STREET_NAME;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Robin Boldt

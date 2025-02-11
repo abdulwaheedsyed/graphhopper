@@ -18,11 +18,9 @@
 
 package com.graphhopper.http;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.transit.realtime.GtfsRealtime;
-
-import java.io.IOException;
 import java.net.URL;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class FeedConfiguration {
 

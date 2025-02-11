@@ -18,17 +18,19 @@
 
 package com.graphhopper.routing.util.parsers;
 
+import java.text.ParseException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.graphhopper.reader.ReaderWay;
 import com.graphhopper.reader.osm.conditional.ConditionalValueParser;
 import com.graphhopper.reader.osm.conditional.DateRangeParser;
 import com.graphhopper.routing.ev.EdgeIntAccess;
 import com.graphhopper.storage.IntsRef;
 import com.graphhopper.util.Helper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.text.ParseException;
-import java.util.*;
 
 /**
  * This parser fills the different XYTemporalAccess enums from the OSM conditional

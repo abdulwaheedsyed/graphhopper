@@ -1,5 +1,32 @@
 package com.graphhopper.resources;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.util.AffineTransformation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.conveyal.gtfs.model.Stop;
 import com.google.protobuf.ByteString;
 import com.graphhopper.GraphHopper;
@@ -8,26 +35,8 @@ import com.graphhopper.gtfs.PtGraph;
 import com.graphhopper.matching.MatchResult;
 import com.graphhopper.util.Parameters;
 import com.graphhopper.util.shapes.BBox;
-import no.ecc.vectortile.VectorTileEncoder;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geom.util.AffineTransformation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import no.ecc.vectortile.VectorTileEncoder;
 
 @Path("pt-mvt")
 @Singleton

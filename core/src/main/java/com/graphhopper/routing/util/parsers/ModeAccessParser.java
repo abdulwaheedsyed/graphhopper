@@ -1,17 +1,15 @@
 package com.graphhopper.routing.util.parsers;
 
-import com.graphhopper.reader.ReaderWay;
-import com.graphhopper.routing.ev.BooleanEncodedValue;
-import com.graphhopper.routing.ev.EdgeIntAccess;
-import com.graphhopper.routing.util.FerrySpeedCalculator;
-import com.graphhopper.routing.util.TransportationMode;
-import com.graphhopper.storage.IntsRef;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.graphhopper.reader.ReaderWay;
+import com.graphhopper.routing.ev.BooleanEncodedValue;
+import com.graphhopper.routing.ev.EdgeIntAccess;
+import com.graphhopper.routing.util.FerrySpeedCalculator;
 import static com.graphhopper.routing.util.parsers.OSMTemporalAccessParser.hasTemporalRestriction;
+import com.graphhopper.storage.IntsRef;
 
 public class ModeAccessParser implements TagParser {
 
