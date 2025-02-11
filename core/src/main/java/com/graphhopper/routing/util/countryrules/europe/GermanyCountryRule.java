@@ -21,7 +21,6 @@ package com.graphhopper.routing.util.countryrules.europe;
 import com.graphhopper.reader.ReaderWay;
 import com.graphhopper.routing.ev.RoadAccess;
 import com.graphhopper.routing.ev.RoadClass;
-import com.graphhopper.routing.ev.Toll;
 import com.graphhopper.routing.util.TransportationMode;
 import com.graphhopper.routing.util.countryrules.CountryRule;
 
@@ -51,17 +50,4 @@ public class GermanyCountryRule implements CountryRule {
         }
     }
 
-    @Override
-    public Toll getToll(ReaderWay readerWay, Toll currentToll) {
-        if (currentToll != Toll.MISSING) {
-            return currentToll;
-        }
-
-        RoadClass roadClass = RoadClass.find(readerWay.getTag("highway", ""));
-        if (roadClass == RoadClass.MOTORWAY || roadClass == RoadClass.TRUNK || roadClass == RoadClass.PRIMARY) {
-            return Toll.HGV;
-        }
-
-        return currentToll;
-    }
 }

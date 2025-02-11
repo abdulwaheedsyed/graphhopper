@@ -17,17 +17,14 @@
  */
 package com.graphhopper.routing.util.parsers;
 
+import com.graphhopper.reader.ReaderWay;
+import com.graphhopper.routing.ev.*;
+import com.graphhopper.routing.util.countryrules.CountryRule;
+import com.graphhopper.storage.IntsRef;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import com.graphhopper.reader.ReaderWay;
-import com.graphhopper.routing.ev.Country;
-import com.graphhopper.routing.ev.EdgeIntAccess;
-import com.graphhopper.routing.ev.EnumEncodedValue;
-import com.graphhopper.routing.ev.RoadClass;
-import com.graphhopper.routing.ev.Toll;
-import com.graphhopper.storage.IntsRef;
 
 public class OSMTollParser implements TagParser {
 
