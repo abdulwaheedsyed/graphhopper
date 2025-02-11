@@ -18,6 +18,12 @@
 
 package com.graphhopper.routing;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.carrotsearch.hppc.cursors.IntCursor;
 import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
@@ -30,7 +36,11 @@ import com.graphhopper.routing.ev.Subnetwork;
 import com.graphhopper.routing.lm.LMRoutingAlgorithmFactory;
 import com.graphhopper.routing.lm.LandmarkStorage;
 import com.graphhopper.routing.querygraph.QueryGraph;
-import com.graphhopper.routing.util.*;
+import com.graphhopper.routing.util.DefaultSnapFilter;
+import com.graphhopper.routing.util.DirectedEdgeFilter;
+import com.graphhopper.routing.util.EdgeFilter;
+import com.graphhopper.routing.util.EncodingManager;
+import com.graphhopper.routing.util.TraversalMode;
 import com.graphhopper.routing.weighting.Weighting;
 import com.graphhopper.routing.weighting.custom.CustomWeighting;
 import com.graphhopper.routing.weighting.custom.FindMinMax;
@@ -39,21 +49,33 @@ import com.graphhopper.storage.Graph;
 import com.graphhopper.storage.RoutingCHGraph;
 import com.graphhopper.storage.index.LocationIndex;
 import com.graphhopper.storage.index.Snap;
-import com.graphhopper.util.*;
+import com.graphhopper.util.CustomModel;
+import static com.graphhopper.util.DistanceCalcEarth.DIST_EARTH;
+import com.graphhopper.util.Helper;
+import com.graphhopper.util.PMap;
+import com.graphhopper.util.Parameters;
+import static com.graphhopper.util.Parameters.Algorithms.ALT_ROUTE;
+import static com.graphhopper.util.Parameters.Algorithms.ROUND_TRIP;
+import static com.graphhopper.util.Parameters.Routing.ALGORITHM;
+import static com.graphhopper.util.Parameters.Routing.CURBSIDE;
+import static com.graphhopper.util.Parameters.Routing.CURBSIDE_STRICTNESS;
+import static com.graphhopper.util.Parameters.Routing.ELEVATION_WAY_POINT_MAX_DISTANCE;
+import static com.graphhopper.util.Parameters.Routing.MAX_VISITED_NODES;
+import static com.graphhopper.util.Parameters.Routing.PASS_THROUGH;
+import static com.graphhopper.util.Parameters.Routing.POINT_HINT;
+import static com.graphhopper.util.Parameters.Routing.TIMEOUT_MS;
+import com.graphhopper.util.PathMerger;
+import com.graphhopper.util.PointList;
+import com.graphhopper.util.RamerDouglasPeucker;
+import com.graphhopper.util.StopWatch;
+import com.graphhopper.util.TranslationMap;
+import static com.graphhopper.util.TurnCostsConfig.INFINITE_U_TURN_COSTS;
 import com.graphhopper.util.details.PathDetailsBuilderFactory;
 import com.graphhopper.util.exceptions.PointDistanceExceededException;
 import com.graphhopper.util.exceptions.PointNotFoundException;
 import com.graphhopper.util.exceptions.PointOutOfBoundsException;
 import com.graphhopper.util.shapes.BBox;
 import com.graphhopper.util.shapes.GHPoint;
-
-import java.util.*;
-
-import static com.graphhopper.util.DistanceCalcEarth.DIST_EARTH;
-import static com.graphhopper.util.Parameters.Algorithms.ALT_ROUTE;
-import static com.graphhopper.util.Parameters.Algorithms.ROUND_TRIP;
-import static com.graphhopper.util.Parameters.Routing.*;
-import static com.graphhopper.util.TurnCostsConfig.INFINITE_U_TURN_COSTS;
 
 public class Router {
     protected final BaseGraph graph;
@@ -98,7 +120,7 @@ public class Router {
         try {
             checkNoLegacyParameters(request);
             checkAtLeastOnePoint(request);
-            checkIfPointsAreInBounds(request.getPoints());
+            checkIfPointsAreInBoundsAndNotNull(request.getPoints());
             checkHeadings(request);
             checkPointHints(request);
             checkCurbsides(request);
@@ -147,13 +169,14 @@ public class Router {
             throw new IllegalArgumentException("You have to pass at least one point");
     }
 
-    private void checkIfPointsAreInBounds(List<GHPoint> points) {
+    private void checkIfPointsAreInBoundsAndNotNull(List<GHPoint> points) {
         BBox bounds = graph.getBounds();
         for (int i = 0; i < points.size(); i++) {
             GHPoint point = points.get(i);
-            if (!bounds.contains(point.getLat(), point.getLon())) {
+            if (point == null)
+                throw new IllegalArgumentException("Point " + i + " is null");
+            if (!bounds.contains(point.getLat(), point.getLon()))
                 throw new PointOutOfBoundsException("Point " + i + " is out of bounds: " + point + ", the bounds are: " + bounds, i);
-            }
         }
     }
 
