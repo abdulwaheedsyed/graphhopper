@@ -10,16 +10,24 @@
 
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-
 package com.graphhopper.isochrone.algorithm;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
-import org.locationtech.jts.geom.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.ToIntBiFunction;
+
+import org.locationtech.jts.algorithm.Area;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.prep.PreparedPolygon;
 import org.locationtech.jts.triangulate.quadedge.Vertex;
-
-import java.util.*;
-import java.util.function.ToIntBiFunction;
 
 /**
  *
@@ -47,8 +55,12 @@ public class ContourBuilder {
         ToIntBiFunction<Vertex, Vertex> cut = (orig, dest) -> {
             double za = orig.getZ();
             double zb = dest.getZ();
-            if (za <= z0 && zb > z0) return 1;
-            if (za > z0 && zb <= z0) return -1;
+            if (za <= z0 && zb > z0) {
+                return 1;
+            }
+            if (za > z0 && zb <= z0) {
+                return -1;
+            }
             return 0;
         };
         return computeIsoline(cut, seedEdges);
@@ -60,8 +72,9 @@ public class ContourBuilder {
 
         for (ReadableQuadEdge f : seedEdges) {
             ReadableQuadEdge e = f.getPrimary();
-            if (processed.contains(e))
+            if (processed.contains(e)) {
                 continue;
+            }
             processed.add(e);
             int cut0 = cut.applyAsInt(e.orig(), e.dest());
             if (cut0 == 0) {
@@ -125,10 +138,11 @@ public class ContourBuilder {
         List<LinearRing> holes = new ArrayList<>(rings.size() / 2);
         // 1. Split the polygon list in two: shells and holes (CCW and CW)
         for (LinearRing ring : rings) {
-            if (CGAlgorithms.signedArea(ring.getCoordinateSequence()) > 0.0)
-                holes.add(ring);
-            else
+            if (Area.ofRingSigned(ring.getCoordinateSequence()) > 0.0) {
+                holes.add(ring); 
+            }else {
                 shells.add(new PreparedPolygon(geometryFactory.createPolygon(ring)));
+            }
         }
         // 2. Sort the shells based on number of points to optimize step 3.
         shells.sort((o1, o2) -> o2.getGeometry().getNumPoints() - o1.getGeometry().getNumPoints());
@@ -137,7 +151,8 @@ public class ContourBuilder {
         }
         // 3. For each hole, determine which shell it fits in.
         for (LinearRing hole : holes) {
-            outer: {
+            outer:
+            {
                 // Probably most of the time, the first shell will be the one
                 for (PreparedPolygon shell : shells) {
                     if (shell.contains(hole)) {
