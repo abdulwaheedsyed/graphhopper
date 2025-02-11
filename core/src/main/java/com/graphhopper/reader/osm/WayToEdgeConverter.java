@@ -15,8 +15,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
 package com.graphhopper.reader.osm;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.LongFunction;
 
 import com.carrotsearch.hppc.IntArrayList;
 import com.carrotsearch.hppc.LongArrayList;
@@ -25,12 +29,8 @@ import com.carrotsearch.hppc.cursors.LongCursor;
 import com.graphhopper.storage.BaseGraph;
 import com.graphhopper.util.EdgeIteratorState;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.LongFunction;
-
 public class WayToEdgeConverter {
+
     private final BaseGraph baseGraph;
     private final LongFunction<Iterator<IntCursor>> edgesByWay;
 
@@ -40,39 +40,49 @@ public class WayToEdgeConverter {
     }
 
     /**
-     * Finds the edge IDs associated with the given OSM ways that are adjacent to the given via-node.
-     * For each way there can be multiple edge IDs and there should be exactly one that is adjacent to the via-node
-     * for each way. Otherwise we throw {@link OSMRestrictionException}
+     * Finds the edge IDs associated with the given OSM ways that are adjacent
+     * to the given via-node. For each way there can be multiple edge IDs and
+     * there should be exactly one that is adjacent to the via-node for each
+     * way. Otherwise we throw {@link OSMRestrictionException}
      */
     public NodeResult convertForViaNode(LongArrayList fromWays, int viaNode, LongArrayList toWays) throws OSMRestrictionException {
-        if (fromWays.isEmpty() || toWays.isEmpty())
+        if (fromWays.isEmpty() || toWays.isEmpty()) {
             throw new IllegalArgumentException("There must be at least one from- and to-way");
-        if (fromWays.size() > 1 && toWays.size() > 1)
+        }
+        if (fromWays.size() > 1 && toWays.size() > 1) {
             throw new IllegalArgumentException("There can only be multiple from- or to-ways, but not both");
+        }
         NodeResult result = new NodeResult(fromWays.size(), toWays.size());
-        for (LongCursor fromWay : fromWays)
+        for (LongCursor fromWay : fromWays) {
             edgesByWay.apply(fromWay.value).forEachRemaining(e -> {
-                if (baseGraph.isAdjacentToNode(e.value, viaNode))
+                if (baseGraph.isAdjacentToNode(e.value, viaNode)) {
                     result.fromEdges.add(e.value);
+                }
             });
-        if (result.fromEdges.size() < fromWays.size())
-            throw new OSMRestrictionException("has from-member ways that aren't adjacent to the via-member node");
-        else if (result.fromEdges.size() > fromWays.size())
+        }
+        if (result.fromEdges.size() < fromWays.size()) {
+            throw new OSMRestrictionException("has from-member ways that aren't adjacent to the via-member node"); 
+        }else if (result.fromEdges.size() > fromWays.size()) {
             throw new OSMRestrictionException("has from-member ways that aren't split at the via-member node");
+        }
 
-        for (LongCursor toWay : toWays)
+        for (LongCursor toWay : toWays) {
             edgesByWay.apply(toWay.value).forEachRemaining(e -> {
-                if (baseGraph.isAdjacentToNode(e.value, viaNode))
+                if (baseGraph.isAdjacentToNode(e.value, viaNode)) {
                     result.toEdges.add(e.value);
+                }
             });
-        if (result.toEdges.size() < toWays.size())
-            throw new OSMRestrictionException("has to-member ways that aren't adjacent to the via-member node");
-        else if (result.toEdges.size() > toWays.size())
+        }
+        if (result.toEdges.size() < toWays.size()) {
+            throw new OSMRestrictionException("has to-member ways that aren't adjacent to the via-member node"); 
+        }else if (result.toEdges.size() > toWays.size()) {
             throw new OSMRestrictionException("has to-member ways that aren't split at the via-member node");
+        }
         return result;
     }
 
     public static class NodeResult {
+
         private final IntArrayList fromEdges;
         private final IntArrayList toEdges;
 
@@ -91,51 +101,72 @@ public class WayToEdgeConverter {
     }
 
     /**
-     * Finds the edge IDs associated with the given OSM ways that are adjacent to each other. For example for given
-     * from-, via- and to-ways there can be multiple edges associated with each (because each way can be split into
-     * multiple edges). We then need to find the from-edge that is connected with one of the via-edges which in turn
-     * must be connected with one of the to-edges. We use DFS/backtracking to do this.
-     * There can also be *multiple* via-ways, but the concept is the same.
-     * Note that there can also be multiple from- or to-*ways*, but only one of each of them should be considered at a
-     * time. In contrast to the via-ways there are only multiple from/to-ways, because of restrictions like no_entry or
-     * no_exit where there can be multiple from- or to-members. So we need to find one edge-chain for each pair of from-
-     * and to-ways.
-     * Besides the edge IDs we also return the node IDs that connect the edges, so we can add turn restrictions at these
-     * nodes later.
+     * Finds the edge IDs associated with the given OSM ways that are adjacent
+     * to each other. For example for given from-, via- and to-ways there can be
+     * multiple edges associated with each (because each way can be split into
+     * multiple edges). We then need to find the from-edge that is connected
+     * with one of the via-edges which in turn must be connected with one of the
+     * to-edges. We use DFS/backtracking to do this. There can also be
+     * *multiple* via-ways, but the concept is the same. Note that there can
+     * also be multiple from- or to-*ways*, but only one of each of them should
+     * be considered at a time. In contrast to the via-ways there are only
+     * multiple from/to-ways, because of restrictions like no_entry or no_exit
+     * where there can be multiple from- or to-members. So we need to find one
+     * edge-chain for each pair of from- and to-ways. Besides the edge IDs we
+     * also return the node IDs that connect the edges, so we can add turn
+     * restrictions at these nodes later.
      */
     public EdgeResult convertForViaWays(LongArrayList fromWays, LongArrayList viaWays, LongArrayList toWays) throws OSMRestrictionException {
-        if (fromWays.isEmpty() || toWays.isEmpty() || viaWays.isEmpty())
+        if (fromWays.isEmpty() || toWays.isEmpty() || viaWays.isEmpty()) {
             throw new IllegalArgumentException("There must be at least one from-, via- and to-way");
-        if (fromWays.size() > 1 && toWays.size() > 1)
+        }
+        if (fromWays.size() > 1 && toWays.size() > 1) {
             throw new IllegalArgumentException("There can only be multiple from- or to-ways, but not both");
+        }
         List<IntArrayList> solutions = new ArrayList<>();
-        for (LongCursor fromWay : fromWays)
-            for (LongCursor toWay : toWays)
+        for (LongCursor fromWay : fromWays) {
+            for (LongCursor toWay : toWays) {
                 findEdgeChain(fromWay.value, viaWays, toWay.value, solutions);
-        if (solutions.size() < fromWays.size() * toWays.size())
-            throw new OSMRestrictionException("has disconnected member ways");
-        else if (solutions.size() > fromWays.size() * toWays.size())
+            }
+        }
+        if (solutions.size() < fromWays.size() * toWays.size()) {
+            throw new OSMRestrictionException("has disconnected member ways"); 
+        }else if (solutions.size() > fromWays.size() * toWays.size()) {
             throw new OSMRestrictionException("has member ways that do not form a unique path");
-        return buildResult(solutions, new EdgeResult(fromWays.size(), viaWays.size(), toWays.size()));
+        }
+        return buildResult(solutions, fromWays, viaWays, toWays);
     }
 
-    private static EdgeResult buildResult(List<IntArrayList> edgeChains, EdgeResult result) {
-        for (IntArrayList edgeChain : edgeChains) {
-            result.fromEdges.add(edgeChain.get(0));
-            if (result.nodes.isEmpty()) {
-                // the via-edges and nodes are the same for edge chain
-                for (int i = 1; i < edgeChain.size() - 3; i += 2) {
-                    result.nodes.add(edgeChain.get(i));
-                    result.viaEdges.add(edgeChain.get(i + 1));
-                }
-                result.nodes.add(edgeChain.get(edgeChain.size() - 2));
+    private static EdgeResult buildResult(List<IntArrayList> edgeChains, LongArrayList fromWays, LongArrayList viaWays, LongArrayList toWays) {
+        EdgeResult result = new EdgeResult(fromWays.size(), viaWays.size(), toWays.size());
+        // we get multiple edge chains, but they are expected to be identical except for their first or last members
+        IntArrayList firstChain = edgeChains.get(0);
+        result.fromEdges.add(firstChain.get(0));
+        for (int i = 1; i < firstChain.size() - 3; i += 2) {
+            result.nodes.add(firstChain.get(i));
+            result.viaEdges.add(firstChain.get(i + 1));
+        }
+        result.nodes.add(firstChain.get(firstChain.size() - 2));
+        result.toEdges.add(firstChain.get(firstChain.size() - 1));
+        // We keep the first/last elements of all chains in case there are multiple from/to ways
+        List<IntArrayList> otherChains = edgeChains.subList(1, edgeChains.size());
+        if (fromWays.size() > 1) {
+            if (otherChains.stream().anyMatch(chain -> chain.get(chain.size() - 1) != firstChain.get(firstChain.size() - 1))) {
+                throw new IllegalArgumentException("edge chains were supposed to be the same except for their first elements, but got: " + edgeChains + " - for: " + fromWays + ", " + viaWays + ", " + toWays);
             }
-            result.toEdges.add(edgeChain.get(edgeChain.size() - 1));
+            otherChains.forEach(chain -> result.fromEdges.add(chain.get(0)));
+        } else if (toWays.size() > 1) {
+            if (otherChains.stream().anyMatch(chain -> chain.get(0) != firstChain.get(0))) {
+                throw new IllegalArgumentException("edge chains were supposed to be the same except for their last elements, but got: " + edgeChains + " - for: " + fromWays + ", " + viaWays + ", " + toWays);
+            }
+            otherChains.forEach(chain -> result.toEdges.add(chain.get(chain.size() - 1)));
+        } else if (!otherChains.isEmpty()) {
+            throw new IllegalStateException("If there are multiple chains there must be either multiple from- or to-ways.");
         }
         return result;
     }
 
-    private void findEdgeChain(long fromWay, LongArrayList viaWays, long toWay, List<IntArrayList> solutions) throws OSMRestrictionException {
+    private void findEdgeChain(long fromWay, LongArrayList viaWays, long toWay, List<IntArrayList> solutions) {
         // For each edge chain there must be one edge associated with the from-way, at least one for each via-way and one
         // associated with the to-way. We use DFS with backtracking to find all edge chains that connect an edge
         // associated with the from-way with one associated with the to-way.
@@ -168,7 +199,9 @@ public class WayToEdgeConverter {
         }
         for (int i = 0; i < viaEdgesForViaWays.size(); i++) {
             int viaEdge = viaEdgesForViaWays.get(i);
-            if (viaEdge < 0) continue;
+            if (viaEdge < 0) {
+                continue;
+            }
             if (baseGraph.isAdjacentToNode(viaEdge, node)) {
                 int otherNode = baseGraph.getOtherNode(viaEdge, node);
                 curr.add(viaEdge, otherNode);
@@ -189,6 +222,7 @@ public class WayToEdgeConverter {
     }
 
     public static class EdgeResult {
+
         private final IntArrayList fromEdges;
         private final IntArrayList viaEdges;
         private final IntArrayList toEdges;
@@ -218,8 +252,8 @@ public class WayToEdgeConverter {
          * <pre>
          *   a   b   c   d
          * 0---1---2---3---4
-         * </pre>
-         * where 'a' is the from-edge and 'd' is the to-edge this will be [1,2,3]
+         * </pre> where 'a' is the from-edge and 'd' is the to-edge this will be
+         * [1,2,3]
          */
         public IntArrayList getNodes() {
             return nodes;

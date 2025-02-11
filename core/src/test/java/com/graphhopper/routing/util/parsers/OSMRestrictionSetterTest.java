@@ -1,7 +1,15 @@
 package com.graphhopper.routing.util.parsers;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import com.carrotsearch.hppc.BitSet;
 import com.carrotsearch.hppc.IntArrayList;
+import static com.graphhopper.reader.osm.OSMRestrictionConverter.buildRestrictionsForOSMRestriction;
 import com.graphhopper.reader.osm.Pair;
 import com.graphhopper.reader.osm.RestrictionTopology;
 import com.graphhopper.reader.osm.RestrictionType;
@@ -16,21 +24,15 @@ import com.graphhopper.routing.weighting.SpeedWeighting;
 import com.graphhopper.routing.weighting.TurnCostProvider;
 import com.graphhopper.storage.BaseGraph;
 import com.graphhopper.storage.Graph;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.graphhopper.reader.osm.OSMRestrictionConverter.buildRestrictionsForOSMRestriction;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Here we test turn restrictions on a basic graph, but specifically for OSM (no- and only-restrictions).
- * This is somewhat redundant with {@link RestrictionSetterTest}. Generally, lower-level tests in
+ * Here we test turn restrictions on a basic graph, but specifically for OSM
+ * (no- and only-restrictions). This is somewhat redundant with
+ * {@link RestrictionSetterTest}. Generally, lower-level tests in
  * {@link RestrictionSetterTest} should be preferred.
  */
 public class OSMRestrictionSetterTest {
+
     private static final IntArrayList NO_PATH = IntArrayList.from();
     private DecimalEncodedValue speedEnc;
     private BooleanEncodedValue turnRestrictionEnc;
@@ -415,8 +417,59 @@ public class OSMRestrictionSetterTest {
         assertEquals(NO_PATH, calcPath(3, 4));
     }
 
+    @Test
+    void multiFrom_viaWay() {
+        // 1 \       / 5
+        // 2 - 0 - 4 - 6
+        // 3 /
+        int e1_0 = edge(1, 0);
+        int e2_0 = edge(2, 0);
+        int e3_0 = edge(3, 0);
+        int e0_4 = edge(0, 4);
+        int e4_5 = edge(4, 5);
+        int e4_6 = edge(4, 6);
+        setRestrictions(List.of(
+                // "no_entry" via-way restrictions have multiple from edges
+                new Pair<>(RestrictionTopology.way(edges(e1_0, e2_0, e3_0), edges(e0_4), edges(e4_6), nodes(1, 4)), RestrictionType.NO)
+        ));
+        for (int s = 1; s <= 3; s++) {
+            assertEquals(nodes(s, 0, 4, 5), calcPath(s, 5));
+            assertEquals(NO_PATH, calcPath(s, 6));
+            assertEquals(nodes(5, 4, 0, s), calcPath(5, s));
+            assertEquals(nodes(6, 4, 0, s), calcPath(6, s));
+        }
+        assertEquals(nodes(1, 0, 2), calcPath(1, 2));
+        assertEquals(nodes(3, 0, 1), calcPath(3, 1));
+    }
+
+    @Test
+    void multiTo_viaWay() {
+        // 1 \       / 4
+        // 2 - 0 - 3 - 5
+        //           \ 6
+        int e1_0 = edge(1, 0);
+        int e2_0 = edge(2, 0);
+        int e0_3 = edge(0, 3);
+        int e3_4 = edge(3, 4);
+        int e3_5 = edge(3, 5);
+        int e3_6 = edge(3, 6);
+        setRestrictions(List.of(
+                // "no_exit" via-way restrictions have multiple to edges
+                new Pair<>(RestrictionTopology.way(edges(e1_0), edges(e0_3), edges(e3_4, e3_5, e3_6), nodes(0, 3)), RestrictionType.NO)
+        ));
+        for (int s = 4; s <= 6; s++) {
+            assertEquals(NO_PATH, calcPath(1, s));
+            assertEquals(nodes(2, 0, 3, s), calcPath(2, s));
+            assertEquals(nodes(s, 3, 0, 1), calcPath(s, 1));
+            assertEquals(nodes(s, 3, 0, 2), calcPath(s, 2));
+        }
+        assertEquals(nodes(4, 3, 5), calcPath(4, 5));
+        assertEquals(nodes(5, 3, 6), calcPath(5, 6));
+    }
+
     /**
-     * Shorthand version that only sets restriction for the first turn restriction encoded value
+     * Shorthand version that only sets restriction for the first turn
+     * restriction encoded value
      */
     private void setRestrictions(List<Pair<RestrictionTopology, RestrictionType>> osmRestrictions) {
         setRestrictions(osmRestrictions, osmRestrictions.stream().map(r -> encBits(1)).toList());
@@ -436,7 +489,8 @@ public class OSMRestrictionSetterTest {
     }
 
     /**
-     * Shorthand version that calculates the path for the first turn restriction encoded value
+     * Shorthand version that calculates the path for the first turn restriction
+     * encoded value
      */
     private IntArrayList calcPath(int from, int to) {
         return calcPath(from, to, turnRestrictionEnc);
@@ -447,7 +501,8 @@ public class OSMRestrictionSetterTest {
     }
 
     /**
-     * Shorthand version that calculates the path for the first turn restriction encoded value
+     * Shorthand version that calculates the path for the first turn restriction
+     * encoded value
      */
     private IntArrayList calcPath(Graph graph, int from, int to) {
         return calcPath(graph, from, to, turnRestrictionEnc);
@@ -457,7 +512,9 @@ public class OSMRestrictionSetterTest {
         return new IntArrayList(new Dijkstra(graph, graph.wrapWeighting(new SpeedWeighting(speedEnc, new TurnCostProvider() {
             @Override
             public double calcTurnWeight(int inEdge, int viaNode, int outEdge) {
-                if (inEdge == outEdge) return Double.POSITIVE_INFINITY;
+                if (inEdge == outEdge) {
+                    return Double.POSITIVE_INFINITY;
+                }
                 return graph.getTurnCostStorage().get(turnRestrictionEnc, inEdge, viaNode, outEdge) ? Double.POSITIVE_INFINITY : 0;
             }
 
@@ -468,6 +525,10 @@ public class OSMRestrictionSetterTest {
         })), TraversalMode.EDGE_BASED).calcPath(from, to).calcNodes());
     }
 
+    private IntArrayList edges(int... edges) {
+        return IntArrayList.from(edges);
+    }
+
     private IntArrayList nodes(int... nodes) {
         return IntArrayList.from(nodes);
     }
@@ -475,9 +536,12 @@ public class OSMRestrictionSetterTest {
     private BitSet encBits(int... bits) {
         BitSet b = new BitSet(bits.length);
         for (int i = 0; i < bits.length; i++) {
-            if (bits[i] != 0 && bits[i] != 1)
+            if (bits[i] != 0 && bits[i] != 1) {
                 throw new IllegalArgumentException("bits must be 0 or 1");
-            if (bits[i] > 0) b.set(i);
+            }
+            if (bits[i] > 0) {
+                b.set(i);
+            }
         }
         return b;
     }
